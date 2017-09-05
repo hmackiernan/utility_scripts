@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Getopt::Long;
 use IO::File;
+use File::Path qw(mkpath);
 use Data::LineBuffer;
 use Data::Dumper;
 use Cwd;
@@ -23,9 +24,10 @@ GetOptions(\%config, 'src_dir=s','infile=s','dest_dir=s', 'outfile=s', 'debug:s'
 
 if ($config{"src_dir"} eq "Data") {
 # either they didn't specify it or they specified 'Data' ... we can't actually tell
-    print "\nOK, using default src_dir of 'Data'\n";
+  print "\nOK, using default src_dir of 'Data'\n";
 }
-#comment
+
+
 my $same_dest_dir;
 if (!defined($config{"dest_dir"})) {
     print "you didn't provide a destination directory.\n";

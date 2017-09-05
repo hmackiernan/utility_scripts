@@ -1,18 +1,21 @@
 #!/usr/local/perl
 
+# TODO: clean up unused modules (some already gone, P4)
+# make delimiter an argument (how to pass in a tab?)
+
 use strict;
 use Data::Dumper;
 use IO::File;
 use Getopt::Long;
-use P4;
+
 use English;
 use Date::Manip;
 use Array::Diff;
 use Data::LineBuffer;
 
-my %options = ("port" => "perforce:1666",
-	      "user"=>"hmackiernan",
-	      "client"=>"hmackiernan_main",
+my %options = (
+
+	      "delimiter" => ",",
 	      "group_by_key" => "row_number",
 	      "problem_file" => "bad_issues.txt",
 	       "report_file_prefix" => "report_file",
@@ -21,11 +24,10 @@ my %options = ("port" => "perforce:1666",
 my $connection_pool;
 
 GetOptions(\%options,"infile=s",
-	   "user:s",
-	   "port:s",
 	   "group_by_key:s", # if not provided, group by row number in input file
 	   "src_path|infile:s",
 	   "in_keys:s", # if not provided, assume first line contains column headers, use as keys into row hashes
+	   "delimiter:s",
 	  );
 
 my $go_on; #throw-away var to hold result of getc when pausing
@@ -48,10 +50,12 @@ if (  (!defined($options{'in_keys'}))   or ($options{'in_keys'} eq "first_row") 
     print $first_line;
     $go_on=getc();
   }
-  @in_keys = split /,/, $first_line;
+
+  @in_keys = split /\t/x, $first_line;
+
 } else {
   # use provided argument as list of input keys, comma-separated
-  @in_keys = split /,/, $options{'in_keys'};
+  @in_keys = split /\t/, $options{'in_keys'};
 }
 
 
